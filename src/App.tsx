@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AppContainer from "./Components/AppContainer";
-import Form, { Field } from "./Components/Form";
+import Form from "./Components/Form";
 import Header from "./Components/Header";
 import Home from "./Components/Home";
 
