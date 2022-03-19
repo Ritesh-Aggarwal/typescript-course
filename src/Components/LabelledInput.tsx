@@ -5,16 +5,16 @@ interface Props {
   field: Field;
   removeFieldCB: (id: number) => void;
   value: string;
-  handleChangeCB: (e: any) => void;
+  handleChangeCB: (e: { target: { id: string; value: any } }) => void;
 }
 
 function LabelledInput(props: Props) {
   return (
     <>
       <label htmlFor={props.field.name}>{props.field.name}</label>
-      <div className="flex gap-2">
+      <div className="flex gap-2 my-2">
         <input
-          className="outline  outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg my-2"
+          className="outline text-black outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg"
           type={props.field.type ? props.field.type : "text"}
           id={String(props.field.id)}
           name={props.field.name}
