@@ -19,7 +19,9 @@ function LabelledInput(props: Props) {
           id={String(props.field.id)}
           name={props.field.name}
           value={props.field.value}
-          onChange={(e) => props.handleChangeCB(e)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            props.handleChangeCB(e)
+          }
           placeholder={props.field.placeholder ? props.field.placeholder : ""}
         ></input>
         <button
