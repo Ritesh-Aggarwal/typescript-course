@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FormData } from "./Form";
 import { navigate } from "raviger";
+import { deafultFormsData } from "../constants";
 interface Props {
   formId: string;
 }
@@ -11,15 +12,14 @@ function Preview(props: Props) {
 
   const initialState: (id: number) => FormData = (id) => {
     var JSONdata = localStorage.getItem("formsData");
-    const data = JSONdata ? JSON.parse(JSONdata) : [];
+    const data = JSONdata ? JSON.parse(JSONdata) : deafultFormsData;
     if (data.length) {
-      const form = data.filter((item: FormData) => {
+      const form = data.find((item: FormData) => {
         return item.id === id;
-      })[0];
+      });
       return form;
     }
     //redirect to 404 here
-    return [];
   };
 
   const [state, setState] = useState<FormData>(() =>
