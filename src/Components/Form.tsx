@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { deafultFormsData } from "../constants";
 import LabelledInput from "./LabelledInput";
+import { Link } from "raviger";
 
 export interface Field {
   id: number;
@@ -17,14 +18,23 @@ export interface FormData {
 }
 
 interface Props {
-  form: FormData;
-  closeFormCB: () => void;
-  saveFormCB: (data: FormData[]) => void;
+  formId: string;
 }
 
 function Form(props: Props) {
+  const initialState: (id: number) => FormData = (id) => {
+    var JSONdata = localStorage.getItem("formsData");
+    const data = JSONdata ? JSON.parse(JSONdata) : deafultFormsData;
+    const form = data.filter((item: FormData) => {
+      return item.id === id;
+    })[0];
+    return form;
+  };
+
   const [newField, setNewField] = useState<string>("");
-  const [state, setState] = useState<FormData>(props.form);
+  const [state, setState] = useState<FormData>(() =>
+    initialState(Number(props.formId))
+  );
   const titleRef = useRef<any>(null);
 
   const saveForm = (data: FormData) => {
@@ -37,14 +47,7 @@ function Form(props: Props) {
       data,
     ];
     localStorage.setItem("formsData", JSON.stringify(newData));
-    props.saveFormCB(newData);
   };
-
-  const saveAsNewForm = () => {
-    setState((p) => ({ ...p, id: Number(new Date()) }));
-  };
-
-  useEffect(() => {}, [props.form]);
 
   const addField = () => {
     setState((p) => {
@@ -101,21 +104,13 @@ function Form(props: Props) {
   }, []);
 
   useEffect(() => {
-    saveForm(state);
-    //save form when "save as new form" , using useEffect because state change doesn't take place immediately
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.id]);
-
-  useEffect(() => {
     const timeout = setTimeout(() => {
       saveForm(state);
     }, 1000);
     return () => {
       clearTimeout(timeout);
     };
-    //escape auto-save when title is changed
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.formFields, state.id]);
+  }, [state]);
 
   return (
     <div>
@@ -161,24 +156,19 @@ function Form(props: Props) {
         >
           Save
         </button>
-        <button
-          onClick={saveAsNewForm}
-          className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-        >
-          Save as new form
-        </button>
+
         <button
           onClick={clearForm}
           className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
         >
           Clear form
         </button>
-        <button
-          onClick={props.closeFormCB}
+        <Link
+          href="/"
           className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
         >
           Close form
-        </button>
+        </Link>
       </div>
     </div>
   );

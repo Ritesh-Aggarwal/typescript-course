@@ -1,13 +1,14 @@
+import { ActiveLink } from "raviger";
 import React from "react";
 import logo from "../logo.svg";
 
 interface Props {
-  title: string;
+  // title: string;
 }
 
 function Header(props: Props) {
   return (
-    <div className="flex">
+    <div className="flex border-b p-2">
       <img
         src={logo}
         className="w-12 animate-spin"
@@ -16,7 +17,22 @@ function Header(props: Props) {
         }}
         alt="logo"
       />
-      <h1 className="text-center text-xl flex-1">{props.title}</h1>
+      <div className="flex gap-4 ">
+        {[
+          { url: "/", name: "Home" },
+          { url: "/about", name: "About" },
+        ].map((i) => {
+          return (
+            <ActiveLink
+              key={i.url}
+              href={i.url}
+              exactActiveClass="text-blue-400 border-b-2 border-blue-500"
+            >
+              {i.name}
+            </ActiveLink>
+          );
+        })}
+      </div>
     </div>
   );
 }
