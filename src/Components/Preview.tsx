@@ -114,10 +114,7 @@ function Preview(props: Props) {
         </div>
       </div>
     );
-  } else
-    return (
-      <NotFound
-    );
+  } else return <NotFound />;
 }
 
 export default Preview;
