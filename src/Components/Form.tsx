@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { deafultFormsData } from "../constants";
+import { defaultFormsData } from "../constants";
 import LabelledInput from "./LabelledInput";
 import { Link } from "raviger";
 import { FormData } from "../types/formTypes";
@@ -11,7 +11,8 @@ interface Props {
 function Form(props: Props) {
   const initialState: (id: number) => FormData = (id) => {
     var JSONdata = localStorage.getItem("formsData");
-    const data = JSONdata ? JSON.parse(JSONdata) : deafultFormsData;
+    const data = JSONdata ? JSON.parse(JSONdata) : defaultFormsData;
+    localStorage.setItem("formsData", JSON.stringify(data));
     const form = data.filter((item: FormData) => {
       return item.id === id;
     })[0];
@@ -26,7 +27,7 @@ function Form(props: Props) {
 
   const saveForm = (data: FormData) => {
     const d: string | null = localStorage.getItem("formsData");
-    var oldData: FormData[] = d ? JSON.parse(d) : deafultFormsData;
+    var oldData: FormData[] = d ? JSON.parse(d) : defaultFormsData;
     const newData: FormData[] = [
       ...oldData.filter((item: FormData) => {
         return item.id !== data.id;

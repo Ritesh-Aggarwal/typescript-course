@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import { FormData } from "../types/formTypes";
-import { deafultFormsData, formData } from "../constants";
+import { defaultFormsData, formData } from "../constants";
 import { Link, navigate } from "raviger";
 
 interface Props {}
 
 const initialState: () => FormData[] = () => {
   const data = localStorage.getItem("formsData");
-  return data ? JSON.parse(data) : deafultFormsData;
+  const result = data ? JSON.parse(data) : defaultFormsData;
+  localStorage.setItem("formsData", JSON.stringify(result));
+  return result;
 };
 
 function FormsList(props: Props) {
-  const [list, setList] = useState(() => initialState());
+  const [list, setList] = useState(initialState);
   const openForm = (id: number) => {
     navigate(`/form/${id}`);
   };
@@ -21,8 +23,8 @@ function FormsList(props: Props) {
     const d: string | null = localStorage.getItem("formsData");
     var data: FormData[] = d ? JSON.parse(d) : [];
     data = [...data, newForm];
-    localStorage.setItem("formsData", JSON.stringify(data));
     setList(data);
+    localStorage.setItem("formsData", JSON.stringify(data));
     openForm(newForm.id);
   };
 

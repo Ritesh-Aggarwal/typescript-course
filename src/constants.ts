@@ -34,7 +34,7 @@ export const formData: FormData = {
   formFields: formFields,
 };
 
-export const deafultFormsData: FormData[] = [
+export const defaultFormsData: FormData[] = [
   {
     id: 1,
     title: "Untitled form",
