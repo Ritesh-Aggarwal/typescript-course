@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FormData } from "./Form";
+import { FormData } from "../types/formTypes";
 import { navigate } from "raviger";
 import { deafultFormsData } from "../constants";
 interface Props {
   formId: string;
 }
 function Preview(props: Props) {
-  const inputRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [answers, setAnswers] = useState<string[]>([]);
 
@@ -19,7 +19,6 @@ function Preview(props: Props) {
       });
       return form;
     }
-    //redirect to 404 here
   };
 
   const [state, setState] = useState<FormData>(() =>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Field } from "./Form";
+import { Field } from "../types/formTypes";
 
 interface Props {
   field: Field;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FormData } from "./Form";
+import { FormData } from "../types/formTypes";
 import { deafultFormsData, formData } from "../constants";
 import { Link, navigate } from "raviger";
 

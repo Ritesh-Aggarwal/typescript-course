@@ -2,20 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { deafultFormsData } from "../constants";
 import LabelledInput from "./LabelledInput";
 import { Link } from "raviger";
-
-export interface Field {
-  id: number;
-  name: string;
-  type?: string;
-  placeholder?: string;
-  value: string;
-}
-
-export interface FormData {
-  id: number;
-  title: string;
-  formFields: Field[];
-}
+import { FormData } from "../types/formTypes";
 
 interface Props {
   formId: string;
@@ -35,7 +22,7 @@ function Form(props: Props) {
   const [state, setState] = useState<FormData>(() =>
     initialState(Number(props.formId))
   );
-  const titleRef = useRef<any>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
 
   const saveForm = (data: FormData) => {
     const d: string | null = localStorage.getItem("formsData");
