@@ -3,6 +3,7 @@ import { defaultFormsData } from "../constants";
 import LabelledInput from "./LabelledInput";
 import { Link } from "raviger";
 import { FormData } from "../types/formTypes";
+import NotFound from "./NotFound";
 
 interface Props {
   formId: string;
@@ -99,67 +100,68 @@ function Form(props: Props) {
       clearTimeout(timeout);
     };
   }, [state]);
-
-  return (
-    <div>
-      <input
-        ref={titleRef}
-        value={state.title}
-        onChange={(e) => {
-          setState((p) => ({ ...p, title: e.target.value }));
-        }}
-        className="outline text-black  outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg my-2"
-        type="text"
-      />
-      {state.formFields.map((field, idx) => {
-        return (
-          <div key={idx} className="">
-            <LabelledInput
-              handleChangeCB={handleChangeInput}
-              value={field.value}
-              removeFieldCB={removeField}
-              field={field}
-            />
-          </div>
-        );
-      })}
-      <div className="border-y flex gap-2 p-2 mt-2">
+  if (state) {
+    return (
+      <div>
         <input
-          value={newField}
-          onChange={handleChange}
+          ref={titleRef}
+          value={state.title}
+          onChange={(e) => {
+            setState((p) => ({ ...p, title: e.target.value }));
+          }}
           className="outline text-black  outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg my-2"
           type="text"
         />
-        <button
-          onClick={addField}
-          className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-        >
-          Add Field
-        </button>
-      </div>
-      <div className="flex gap-2">
-        <button
-          onClick={(_) => saveForm(state)}
-          className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-        >
-          Save
-        </button>
+        {state.formFields.map((field, idx) => {
+          return (
+            <div key={idx} className="">
+              <LabelledInput
+                handleChangeCB={handleChangeInput}
+                value={field.value}
+                removeFieldCB={removeField}
+                field={field}
+              />
+            </div>
+          );
+        })}
+        <div className="border-y flex gap-2 p-2 mt-2">
+          <input
+            value={newField}
+            onChange={handleChange}
+            className="outline text-black  outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg my-2"
+            type="text"
+          />
+          <button
+            onClick={addField}
+            className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+          >
+            Add Field
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={(_) => saveForm(state)}
+            className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+          >
+            Save
+          </button>
 
-        <button
-          onClick={clearForm}
-          className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-        >
-          Clear form
-        </button>
-        <Link
-          href="/"
-          className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-        >
-          Close form
-        </Link>
+          <button
+            onClick={clearForm}
+            className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+          >
+            Clear form
+          </button>
+          <Link
+            href="/"
+            className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+          >
+            Close form
+          </Link>
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else return <NotFound />;
 }
 
 export default Form;
