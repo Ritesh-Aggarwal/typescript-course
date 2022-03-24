@@ -60,70 +60,72 @@ function Preview(props: Props) {
   };
 
   if (state && !previewAnswers) {
-    return (
-      <div className="flex flex-col">
-        <label
-          htmlFor={state.formFields[currentQuestion].name}
-          className="text-lg mb-2 font-semibold mt-2"
-        >
-          {state.formFields[currentQuestion].name}
-        </label>
-        <input
-          ref={inputRef}
-          className="outline text-black outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg"
-          type={
-            state.formFields[currentQuestion].type
-              ? state.formFields[currentQuestion].type
-              : "text"
-          }
-          id={String(state.formFields[currentQuestion].id)}
-          name={state.formFields[currentQuestion].name}
-          value={state.formFields[currentQuestion].value}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            handleChangeInput(e);
-          }}
-          onKeyPress={(e: { key: string }) => {
-            if (e.key === "Enter") {
-              if (currentQuestion === state.formFields.length - 1) {
-                submitForm();
-              } else saveAnswer();
+    if (state.formFields.length) {
+      return (
+        <div className="flex flex-col">
+          <label
+            htmlFor={state.formFields[currentQuestion].name}
+            className="text-lg mb-2 font-semibold mt-2"
+          >
+            {state.formFields[currentQuestion].name}
+          </label>
+          <input
+            ref={inputRef}
+            className="outline text-black outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg"
+            type={
+              state.formFields[currentQuestion].type
+                ? state.formFields[currentQuestion].type
+                : "text"
             }
-          }}
-          placeholder={
-            state.formFields[currentQuestion].placeholder
-              ? state.formFields[currentQuestion].placeholder
-              : ""
-          }
-        />
-        <div className="flex mt-4 gap-2 justify-between items-center">
-          Question {currentQuestion + 1} of {state.formFields.length}
-          <div className="flex gap-2">
-            {currentQuestion > 0 && (
-              <button
-                onClick={() => {
-                  setCurrentQuestion((p) => p - 1);
-                }}
-                className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-              >
-                Back
-              </button>
-            )}
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-              onClick={
-                currentQuestion === state.formFields.length - 1
-                  ? submitForm
-                  : saveAnswer
+            id={String(state.formFields[currentQuestion].id)}
+            name={state.formFields[currentQuestion].name}
+            value={state.formFields[currentQuestion].value}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              handleChangeInput(e);
+            }}
+            onKeyPress={(e: { key: string }) => {
+              if (e.key === "Enter") {
+                if (currentQuestion === state.formFields.length - 1) {
+                  submitForm();
+                } else saveAnswer();
               }
-            >
-              {currentQuestion === state.formFields.length - 1
-                ? "Submit"
-                : "Next"}
-            </button>
+            }}
+            placeholder={
+              state.formFields[currentQuestion].placeholder
+                ? state.formFields[currentQuestion].placeholder
+                : ""
+            }
+          />
+          <div className="flex mt-4 gap-2 justify-between items-center">
+            Question {currentQuestion + 1} of {state.formFields.length}
+            <div className="flex gap-2">
+              {currentQuestion > 0 && (
+                <button
+                  onClick={() => {
+                    setCurrentQuestion((p) => p - 1);
+                  }}
+                  className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+                >
+                  Back
+                </button>
+              )}
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+                onClick={
+                  currentQuestion === state.formFields.length - 1
+                    ? submitForm
+                    : saveAnswer
+                }
+              >
+                {currentQuestion === state.formFields.length - 1
+                  ? "Submit"
+                  : "Next"}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else return <>No questions in the form</>;
   } else if (state && previewAnswers) {
     return (
       <>
