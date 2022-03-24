@@ -69,7 +69,8 @@ function Form(props: Props) {
       ...p,
       formFields: p.formFields.map((field) => {
         if (String(field.id) === e.target.id) {
-          return { ...field, value: e.target.value };
+          return { ...field, name: e.target.value };
+          // return { ...field, value: e.target.value };
         } else return field;
       }),
     }));
@@ -103,6 +104,7 @@ function Form(props: Props) {
   if (state) {
     return (
       <div>
+        <div className="inline mr-4 font-semibold">Form title :</div>
         <input
           ref={titleRef}
           value={state.title}
@@ -116,8 +118,9 @@ function Form(props: Props) {
           return (
             <div key={idx} className="">
               <LabelledInput
+                overwriteType={true}
                 handleChangeCB={handleChangeInput}
-                value={field.value}
+                value={field.name}
                 removeFieldCB={removeField}
                 field={field}
               />

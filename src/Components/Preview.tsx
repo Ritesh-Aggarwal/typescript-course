@@ -3,13 +3,16 @@ import { FormData } from "../types/formTypes";
 import { navigate } from "raviger";
 import { defaultFormsData } from "../constants";
 import NotFound from "./NotFound";
+
 interface Props {
   formId: string;
 }
+
 function Preview(props: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [answers, setAnswers] = useState<string[]>([]);
+  const [previewAnswers, setPreviewAnswers] = useState<boolean>(false);
 
   const initialState: () => FormData = () => {
     var JSONdata = localStorage.getItem("formsData");
@@ -43,14 +46,20 @@ function Preview(props: Props) {
     if (currentQuestion < state.formFields.length - 1)
       setCurrentQuestion((p) => p + 1);
   };
-
-  const saveAnswer = () => {
-    //move this logic to save , save all values together
+  const save = () => {
     setAnswers((p) => [...p, state.formFields[currentQuestion].value]);
+  };
+  const saveAnswer = () => {
+    save();
     nextQuestion();
   };
 
-  if (state) {
+  const submitForm = () => {
+    save();
+    setPreviewAnswers(true);
+  };
+
+  if (state && !previewAnswers) {
     return (
       <div className="flex flex-col">
         <label
@@ -70,14 +79,15 @@ function Preview(props: Props) {
           id={String(state.formFields[currentQuestion].id)}
           name={state.formFields[currentQuestion].name}
           value={state.formFields[currentQuestion].value}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            handleChangeInput(e)
-          }
-          onKeyPress={(e) => {
-            if (currentQuestion === state.formFields.length - 1) {
-              alert(answers);
-              navigate("/");
-            } else if (e.key === "Enter") saveAnswer();
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            handleChangeInput(e);
+          }}
+          onKeyPress={(e: { key: string }) => {
+            if (e.key === "Enter") {
+              if (currentQuestion === state.formFields.length - 1) {
+                submitForm();
+              } else saveAnswer();
+            }
           }}
           placeholder={
             state.formFields[currentQuestion].placeholder
@@ -85,34 +95,54 @@ function Preview(props: Props) {
               : ""
           }
         />
-        <div className="flex mt-4 gap-2 justify-end">
-          {currentQuestion > 0 && (
+        <div className="flex mt-4 gap-2 justify-between items-center">
+          Question {currentQuestion + 1} of {state.formFields.length}
+          <div className="flex gap-2">
+            {currentQuestion > 0 && (
+              <button
+                onClick={() => {
+                  setCurrentQuestion((p) => p - 1);
+                }}
+                className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+              >
+                Back
+              </button>
+            )}
             <button
-              onClick={() => {
-                setCurrentQuestion((p) => p - 1);
-              }}
               className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+              onClick={
+                currentQuestion === state.formFields.length - 1
+                  ? submitForm
+                  : saveAnswer
+              }
             >
-              Back
+              {currentQuestion === state.formFields.length - 1
+                ? "Submit"
+                : "Next"}
             </button>
-          )}
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-            onClick={
-              currentQuestion === state.formFields.length - 1
-                ? () => {
-                    alert(answers);
-                    navigate("/");
-                  }
-                : saveAnswer
-            }
-          >
-            {currentQuestion === state.formFields.length - 1
-              ? "Submit"
-              : "Next"}
-          </button>
+          </div>
         </div>
       </div>
+    );
+  } else if (state && previewAnswers) {
+    return (
+      <>
+        {answers.map((ans, index) => {
+          return (
+            <div className="mt-2" key={index}>
+              <strong>{state.formFields[index].name}</strong>: {ans}
+            </div>
+          );
+        })}
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2 mt-4"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          Go home
+        </button>
+      </>
     );
   } else return <NotFound />;
 }
