@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Field, FormData } from "../types/formTypes";
 import { navigate } from "raviger";
 import { defaultFormsData } from "../constants";
-import NotFound from "./NotFound";
 import TextInput from "./TextInput";
 import DropdownInput from "./DropdownInput";
 import RadioInput from "./RadioInput";
@@ -67,102 +66,101 @@ function Preview(props: Props) {
     save();
     setPreviewAnswers(true);
   };
-
-  if (state && !previewAnswers) {
-    if (state.formFields.length) {
-      return (
-        <div className="flex flex-col">
-          <label
-            htmlFor={state.formFields[currentQuestion].name}
-            className="text-lg mb-2 font-semibold mt-2"
-          >
-            {state.formFields[currentQuestion].name}
-          </label>
-          {question.kind === "text" ? (
-            <TextInput
-              handleChangeInputCB={handleChangeInput}
-              field={question}
-              value={state.formFields[currentQuestion].value}
-              currentQuestion={currentQuestion}
-              totalQuestion={state.formFields.length - 1}
-              submitFormCB={submitForm}
-              saveAnswerCB={saveAnswer}
-            />
-          ) : question.kind === "dropdown" ? (
-            <DropdownInput
-              id={question.id}
-              handleChangeCB={handleChangeInput}
-              options={question.options}
-              name={question.name}
-            />
-          ) : question.kind === "radio" ? (
-            <RadioInput handleChangeCB={handleChangeInput} field={question} />
-          ) : question.kind === "textarea" ? (
-            <TextAreaInput
-              field={question}
-              value={state.formFields[currentQuestion].value}
-              handleChangeCB={handleChangeInput}
-            />
-          ) : question.kind === "multi-select" ? (
-            <MultiSelectInput
-              field={question}
-              handleChangeCB={handleChangeInput}
-              value={state.formFields[currentQuestion].value}
-            />
-          ) : (
-            <div>hi</div>
-          )}
-          <div className="flex mt-4 gap-2 justify-between items-center">
-            Question {currentQuestion + 1} of {state.formFields.length}
-            <div className="flex gap-2">
-              {currentQuestion > 0 && (
+  return (
+    <>
+      {!previewAnswers ? (
+        state.formFields.length ? (
+          <div className="flex flex-col">
+            <label
+              htmlFor={state.formFields[currentQuestion].name}
+              className="text-lg mb-2 font-semibold mt-2"
+            >
+              {state.formFields[currentQuestion].name}
+            </label>
+            {question.kind === "text" ? (
+              <TextInput
+                handleChangeInputCB={handleChangeInput}
+                field={question}
+                value={state.formFields[currentQuestion].value}
+                currentQuestion={currentQuestion}
+                totalQuestion={state.formFields.length - 1}
+                submitFormCB={submitForm}
+                saveAnswerCB={saveAnswer}
+              />
+            ) : question.kind === "dropdown" ? (
+              <DropdownInput
+                id={question.id}
+                handleChangeCB={handleChangeInput}
+                options={question.options}
+                name={question.name}
+              />
+            ) : question.kind === "radio" ? (
+              <RadioInput handleChangeCB={handleChangeInput} field={question} />
+            ) : question.kind === "textarea" ? (
+              <TextAreaInput
+                field={question}
+                value={state.formFields[currentQuestion].value}
+                handleChangeCB={handleChangeInput}
+              />
+            ) : question.kind === "multi-select" ? (
+              <MultiSelectInput
+                field={question}
+                handleChangeCB={handleChangeInput}
+                value={state.formFields[currentQuestion].value}
+              />
+            ) : null}
+            <div className="flex mt-4 gap-2 justify-between items-center">
+              Question {currentQuestion + 1} of {state.formFields.length}
+              <div className="flex gap-2">
+                {currentQuestion > 0 && (
+                  <button
+                    onClick={() => {
+                      setCurrentQuestion((p) => p - 1);
+                    }}
+                    className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+                  >
+                    Back
+                  </button>
+                )}
                 <button
-                  onClick={() => {
-                    setCurrentQuestion((p) => p - 1);
-                  }}
                   className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+                  onClick={
+                    currentQuestion === state.formFields.length - 1
+                      ? submitForm
+                      : saveAnswer
+                  }
                 >
-                  Back
+                  {currentQuestion === state.formFields.length - 1
+                    ? "Submit"
+                    : "Next"}
                 </button>
-              )}
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-                onClick={
-                  currentQuestion === state.formFields.length - 1
-                    ? submitForm
-                    : saveAnswer
-                }
-              >
-                {currentQuestion === state.formFields.length - 1
-                  ? "Submit"
-                  : "Next"}
-              </button>
+              </div>
             </div>
           </div>
-        </div>
-      );
-    } else return <>No questions in the form</>;
-  } else if (state && previewAnswers) {
-    return (
-      <>
-        {answers.map((ans, index) => {
-          return (
-            <div className="mt-2" key={index}>
-              <strong>{state.formFields[index].name}</strong> : {ans}
-            </div>
-          );
-        })}
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2 mt-4"
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          Go home
-        </button>
-      </>
-    );
-  } else return <NotFound />;
+        ) : (
+          <>No questions in the form</>
+        )
+      ) : (
+        <>
+          {answers.map((ans, index) => {
+            return (
+              <div className="mt-2" key={index}>
+                <strong>{state.formFields[index].name}</strong> : {ans}
+              </div>
+            );
+          })}
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2 mt-4"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Go home
+          </button>
+        </>
+      )}
+    </>
+  );
 }
 
 export default Preview;
