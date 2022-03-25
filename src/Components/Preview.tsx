@@ -1,15 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FormData } from "../types/formTypes";
+import React, { useEffect, useState } from "react";
+import { Field, FormData } from "../types/formTypes";
 import { navigate } from "raviger";
 import { defaultFormsData } from "../constants";
 import NotFound from "./NotFound";
+import TextInput from "./TextInput";
+import DropdownInput from "./DropdownInput";
+import RadioInput from "./RadioInput";
+import TextAreaInput from "./TextAreaInput";
+import MultiSelectInput from "./MultiSelectInput";
 
 interface Props {
   formId: string;
 }
 
 function Preview(props: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [previewAnswers, setPreviewAnswers] = useState<boolean>(false);
@@ -26,9 +30,13 @@ function Preview(props: Props) {
   };
 
   const [state, setState] = useState<FormData>(initialState);
+  const [question, setQuestion] = useState<Field>(
+    state.formFields[currentQuestion]
+  );
 
   useEffect(() => {
-    inputRef.current?.focus();
+    setQuestion((p) => state.formFields[currentQuestion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestion]);
 
   const handleChangeInput = (e: { target: { id: string; value: any } }) => {
@@ -36,6 +44,7 @@ function Preview(props: Props) {
       ...p,
       formFields: p.formFields.map((field) => {
         if (String(field.id) === e.target.id) {
+          // console.log(e.target.value);
           return { ...field, value: e.target.value };
         } else return field;
       }),
@@ -47,7 +56,7 @@ function Preview(props: Props) {
       setCurrentQuestion((p) => p + 1);
   };
   const save = () => {
-    setAnswers((p) => [...p, state.formFields[currentQuestion].value]);
+    setAnswers((p) => state.formFields.map((i) => i.value));
   };
   const saveAnswer = () => {
     save();
@@ -69,33 +78,40 @@ function Preview(props: Props) {
           >
             {state.formFields[currentQuestion].name}
           </label>
-          <input
-            ref={inputRef}
-            className="outline text-black outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg"
-            type={
-              state.formFields[currentQuestion].type
-                ? state.formFields[currentQuestion].type
-                : "text"
-            }
-            id={String(state.formFields[currentQuestion].id)}
-            name={state.formFields[currentQuestion].name}
-            value={state.formFields[currentQuestion].value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              handleChangeInput(e);
-            }}
-            onKeyPress={(e: { key: string }) => {
-              if (e.key === "Enter") {
-                if (currentQuestion === state.formFields.length - 1) {
-                  submitForm();
-                } else saveAnswer();
-              }
-            }}
-            placeholder={
-              state.formFields[currentQuestion].placeholder
-                ? state.formFields[currentQuestion].placeholder
-                : ""
-            }
-          />
+          {question.kind === "text" ? (
+            <TextInput
+              handleChangeInputCB={handleChangeInput}
+              field={question}
+              value={state.formFields[currentQuestion].value}
+              currentQuestion={currentQuestion}
+              totalQuestion={state.formFields.length - 1}
+              submitFormCB={submitForm}
+              saveAnswerCB={saveAnswer}
+            />
+          ) : question.kind === "dropdown" ? (
+            <DropdownInput
+              id={question.id}
+              handleChangeCB={handleChangeInput}
+              options={question.options}
+              name={question.name}
+            />
+          ) : question.kind === "radio" ? (
+            <RadioInput handleChangeCB={handleChangeInput} field={question} />
+          ) : question.kind === "textarea" ? (
+            <TextAreaInput
+              field={question}
+              value={state.formFields[currentQuestion].value}
+              handleChangeCB={handleChangeInput}
+            />
+          ) : question.kind === "multi-select" ? (
+            <MultiSelectInput
+              field={question}
+              handleChangeCB={handleChangeInput}
+              value={state.formFields[currentQuestion].value}
+            />
+          ) : (
+            <div>hi</div>
+          )}
           <div className="flex mt-4 gap-2 justify-between items-center">
             Question {currentQuestion + 1} of {state.formFields.length}
             <div className="flex gap-2">
@@ -132,7 +148,7 @@ function Preview(props: Props) {
         {answers.map((ans, index) => {
           return (
             <div className="mt-2" key={index}>
-              <strong>{state.formFields[index].name}</strong>: {ans}
+              <strong>{state.formFields[index].name}</strong> : {ans}
             </div>
           );
         })}
