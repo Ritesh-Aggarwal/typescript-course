@@ -1,28 +1,126 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import { defaultFormsData } from "../constants";
 import LabelledInput from "./LabelledInput";
 import { Link } from "raviger";
-import { FormData } from "../types/formTypes";
+import { Field, FormData } from "../types/formTypes";
 import NotFound from "./NotFound";
 
-interface Props {
-  formId: string;
-}
+const initialState: (id: number) => FormData = (id) => {
+  var JSONdata = localStorage.getItem("formsData");
+  const data = JSONdata ? JSON.parse(JSONdata) : defaultFormsData;
+  localStorage.setItem("formsData", JSON.stringify(data));
+  const form = data.filter((item: FormData) => {
+    return item.id === id;
+  })[0];
+  return form;
+};
 
-function Form(props: Props) {
-  const initialState: (id: number) => FormData = (id) => {
-    var JSONdata = localStorage.getItem("formsData");
-    const data = JSONdata ? JSON.parse(JSONdata) : defaultFormsData;
-    localStorage.setItem("formsData", JSON.stringify(data));
-    const form = data.filter((item: FormData) => {
-      return item.id === id;
-    })[0];
-    return form;
+type AddFieldAction = {
+  type: "ADD_FIELD";
+  payload: {
+    kind: string;
+    name: string;
   };
+};
 
+type RemoveFieldAction = {
+  type: "REMOVE_FIELD";
+  payload: {
+    id: number;
+  };
+};
+
+type UpdateTitleAction = {
+  type: "UPDATE_TITLE";
+  payload: {
+    value: string;
+  };
+};
+
+type AddOptionAction = {
+  type: "ADD_FIELD_OPTIONS";
+  payload: {
+    value: string;
+    id: string;
+  };
+};
+
+type UpdateNameAction = {
+  type: "UPDATE_NAME";
+  payload: {
+    value: string;
+    id: string;
+  };
+};
+
+type FormDataAction =
+  | AddFieldAction
+  | RemoveFieldAction
+  | UpdateTitleAction
+  | AddOptionAction
+  | UpdateNameAction;
+
+const reducer = (state: FormData, action: FormDataAction) => {
+  switch (action.type) {
+    case "ADD_FIELD": {
+      var obj: any = {
+        id: Number(new Date()),
+        name: action.payload.name,
+        kind: action.payload.kind,
+        value: "",
+      };
+      if (["radio", "multi-select", "dropdown"].includes(action.payload.kind)) {
+        obj = { ...obj, options: [] };
+      }
+      return {
+        ...state,
+        formFields: [...state.formFields, obj],
+      };
+    }
+    case "REMOVE_FIELD": {
+      return {
+        ...state,
+        formFields: state.formFields.filter(
+          (item) => item.id !== action.payload.id
+        ),
+      };
+    }
+    case "UPDATE_TITLE": {
+      return {
+        ...state,
+        title: action.payload.value,
+      };
+    }
+    case "ADD_FIELD_OPTIONS": {
+      return {
+        ...state,
+        formFields: state.formFields.map((field: Field) => {
+          if (String(field.id) === action.payload.id) {
+            return {
+              ...field,
+              options: action.payload.value.split(","),
+            };
+          } else return field;
+        }),
+      };
+    }
+    case "UPDATE_NAME": {
+      return {
+        ...state,
+        formFields: state.formFields.map((field: Field) => {
+          if (String(field.id) === action.payload.id) {
+            return { ...field, name: action.payload.value };
+          } else return field;
+        }),
+      };
+    }
+  }
+};
+
+function Form(props: { formId: string }) {
   const [newField, setNewField] = useState<string>("");
-  const [newFieldType, setNewFieldType] = useState<string>("");
-  const [state, setState] = useState<FormData>(() =>
+  const [newFieldType, setNewFieldType] = useState<string>("text");
+  const [state, dispatch] = useReducer(reducer, null, () =>
     initialState(Number(props.formId))
   );
   const titleRef = useRef<HTMLInputElement>(null);
@@ -40,30 +138,16 @@ function Form(props: Props) {
   };
 
   const addField = () => {
-    var obj: any = {
-      id: Number(new Date()),
-      name: newField,
-      value: "",
-      kind: newFieldType === "" ? "text" : newFieldType,
-    };
-    if (["radio", "multi-select", "dropdown"].includes(newFieldType)) {
-      obj = { ...obj, options: [] };
-    }
-    setState((p) => {
-      return {
-        ...p,
-        formFields: [...p.formFields, obj],
-      };
+    dispatch({
+      type: "ADD_FIELD",
+      payload: { kind: newFieldType, name: newField },
     });
     setNewField("");
     setNewFieldType("");
   };
 
   const removeField = (id: number) => {
-    setState((p) => ({
-      ...p,
-      formFields: p.formFields.filter((item) => item.id !== id),
-    }));
+    dispatch({ type: "REMOVE_FIELD", payload: { id: id } });
   };
 
   const handleChange = (e: {
@@ -73,15 +157,10 @@ function Form(props: Props) {
   };
 
   const handleChangeInput = (e: { target: { id: string; value: any } }) => {
-    setState((p) => ({
-      ...p,
-      formFields: p.formFields.map((field) => {
-        if (String(field.id) === e.target.id) {
-          return { ...field, name: e.target.value };
-          // return { ...field, value: e.target.value };
-        } else return field;
-      }),
-    }));
+    dispatch({
+      type: "UPDATE_NAME",
+      payload: { id: e.target.id, value: e.target.value },
+    });
   };
 
   useEffect(() => {
@@ -108,12 +187,15 @@ function Form(props: Props) {
           ref={titleRef}
           value={state.title}
           onChange={(e) => {
-            setState((p) => ({ ...p, title: e.target.value }));
+            dispatch({
+              type: "UPDATE_TITLE",
+              payload: { value: e.target.value },
+            });
           }}
           className="outline text-black  outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg my-2"
           type="text"
         />
-        {state.formFields.map((field, idx) => {
+        {state.formFields.map((field: Field, idx: number) => {
           return (
             <div key={idx} className="my-4">
               <div className="font-semibold">Question {idx + 1}</div>
@@ -146,17 +228,10 @@ function Form(props: Props) {
                         name={field.name}
                         value={field.options.join(",")}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          setState((p) => ({
-                            ...p,
-                            formFields: p.formFields.map((field) => {
-                              if (String(field.id) === e.target.id) {
-                                return {
-                                  ...field,
-                                  options: e.target.value.split(","),
-                                };
-                              } else return field;
-                            }),
-                          }));
+                          dispatch({
+                            type: "ADD_FIELD_OPTIONS",
+                            payload: { id: e.target.id, value: e.target.value },
+                          });
                         }}
                       />
                     </div>
