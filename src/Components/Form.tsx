@@ -84,14 +84,14 @@ function Form(props: Props) {
     }));
   };
 
-  const clearForm = () => {
-    setState((p) => ({
-      ...p,
-      formFields: p.formFields.map((field) => {
-        return { ...field, value: "" };
-      }),
-    }));
-  };
+  // const clearForm = () => {
+  //   setState((p) => ({
+  //     ...p,
+  //     formFields: p.formFields.map((field) => {
+  //       return { ...field, value: "" };
+  //     }),
+  //   }));
+  // };
 
   useEffect(() => {
     document.title = "Form Editor";
@@ -138,6 +138,12 @@ function Form(props: Props) {
                 field.kind === "multi-select" ||
                 field.kind === "radio" ? (
                   <div className="">
+                    {field.options.length > 0 &&
+                    field.options[0] !== "" ? null : (
+                      <div className="bg-red-200 text-red-500 px-4 py-2">
+                        Add atleast one option
+                      </div>
+                    )}
                     <div className="">
                       Add field options (seperated by ",") :
                     </div>
@@ -191,11 +197,11 @@ function Form(props: Props) {
                   <div key={idx} className="flex gap-2 items-center">
                     <input
                       onChange={(e) => {
-                        console.log(e.target.value);
                         setNewFieldType(e.target.value);
                       }}
                       type="radio"
                       name={"fieldType"}
+                      checked={fieldType === newFieldType}
                       value={fieldType}
                     />
                     <label htmlFor={fieldType}>{fieldType}</label>
@@ -213,12 +219,12 @@ function Form(props: Props) {
             Save
           </button>
 
-          <button
+          {/* <button
             onClick={clearForm}
             className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
           >
             Clear form
-          </button>
+          </button> */}
           <Link
             href="/"
             className="mt-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
