@@ -17,10 +17,6 @@ function FormsList(props: Props) {
   const [{ search }] = useQueryParams();
   const [searchString, setSearchString] = useState("");
 
-  const openForm = (id: number) => {
-    navigate(`/form/${id}`);
-  };
-
   const newForm = () => {
     const newForm = { ...formData, id: Number(new Date()) };
     const d: string | null = localStorage.getItem("formsData");
@@ -28,7 +24,7 @@ function FormsList(props: Props) {
     data = [...data, newForm];
     setList(data);
     localStorage.setItem("formsData", JSON.stringify(data));
-    openForm(newForm.id);
+    navigate(`/form/${newForm.id}`);
   };
 
   const deleteForm = (id: number) => {
@@ -86,14 +82,12 @@ function FormsList(props: Props) {
                 >
                   Take quiz
                 </Link>
-                <button
-                  onClick={() => {
-                    openForm(form.id);
-                  }}
+                <Link
+                  href={`/form/${form.id}`}
                   className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
                 >
                   Edit
-                </button>
+                </Link>
                 <button
                   onClick={() => {
                     deleteForm(form.id);
