@@ -37,8 +37,8 @@ type UpdateTitleAction = {
   };
 };
 
-type AddOptionAction = {
-  type: "ADD_FIELD_OPTIONS";
+type UpdateOptionAction = {
+  type: "UPDATE_FIELD_OPTIONS";
   payload: {
     value: string;
     id: string;
@@ -57,20 +57,20 @@ type FormDataAction =
   | AddFieldAction
   | RemoveFieldAction
   | UpdateTitleAction
-  | AddOptionAction
+  | UpdateOptionAction
   | UpdateNameAction;
 
 const reducer = (state: FormData, action: FormDataAction) => {
   switch (action.type) {
     case "ADD_FIELD": {
-      var obj: any = {
+      var obj: Field = {
         id: Number(new Date()),
         name: action.payload.name,
         kind: action.payload.kind,
         value: "",
-      };
+      } as Field;
       if (["radio", "multi-select", "dropdown"].includes(action.payload.kind)) {
-        obj = { ...obj, options: [] };
+        obj = { ...obj, options: [] } as Field;
       }
       return {
         ...state,
@@ -91,7 +91,7 @@ const reducer = (state: FormData, action: FormDataAction) => {
         title: action.payload.value,
       };
     }
-    case "ADD_FIELD_OPTIONS": {
+    case "UPDATE_FIELD_OPTIONS": {
       return {
         ...state,
         formFields: state.formFields.map((field: Field) => {
@@ -179,6 +179,7 @@ function Form(props: { formId: string }) {
       clearTimeout(timeout);
     };
   }, [state]);
+
   if (state) {
     return (
       <div>
@@ -200,43 +201,18 @@ function Form(props: { formId: string }) {
             <div key={idx} className="my-4">
               <div className="font-semibold">Question {idx + 1}</div>
               <div className="border-y">
-                <div className=""></div>
                 <LabelledInput
                   handleChangeCB={handleChangeInput}
                   value={field.name}
                   removeFieldCB={removeField}
                   field={field}
+                  handleOptionChangeCB={(e) => {
+                    dispatch({
+                      type: "UPDATE_FIELD_OPTIONS",
+                      payload: { id: e.target.id, value: e.target.value },
+                    });
+                  }}
                 />
-                {field.kind === "dropdown" ||
-                field.kind === "multi-select" ||
-                field.kind === "radio" ? (
-                  <div className="">
-                    {field.options.length > 0 &&
-                    field.options[0] !== "" ? null : (
-                      <div className="bg-red-200 text-red-500 px-4 py-2">
-                        Add atleast one option
-                      </div>
-                    )}
-                    <div className="">
-                      Add field options (seperated by ",") :
-                    </div>
-                    <div className="my-2">
-                      <input
-                        className="outline w-full text-black outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg"
-                        type="text"
-                        id={String(field.id)}
-                        name={field.name}
-                        value={field.options.join(",")}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          dispatch({
-                            type: "ADD_FIELD_OPTIONS",
-                            payload: { id: e.target.id, value: e.target.value },
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                ) : null}
               </div>
             </div>
           );

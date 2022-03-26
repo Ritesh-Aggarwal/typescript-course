@@ -8,27 +8,42 @@ import RadioInput from "./RadioInput";
 import TextAreaInput from "./TextAreaInput";
 import MultiSelectInput from "./MultiSelectInput";
 
-interface Props {
-  formId: string;
-}
+const initialState: (formId: string) => FormData = (formId) => {
+  var JSONdata = localStorage.getItem("formsData");
+  const data = JSONdata ? JSON.parse(JSONdata) : defaultFormsData;
+  if (data.length > 0) {
+    const form = data.find((item: FormData) => {
+      return item.id === Number(formId);
+    });
+    return form;
+  }
+};
 
-function Preview(props: Props) {
+// type ActionTypes = null
+
+// const reducer = (state, action) => {
+//   switch (action.type) {
+//     case "": {
+//     }
+//   }
+// };
+
+// const cqReducer = (state, action) => {
+//     switch (action.type) {
+//       case "": {
+//       }
+//     }
+//   };
+
+function Preview(props: { formId: string }) {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [answers, setAnswers] = useState<string[]>([]);
+
   const [previewAnswers, setPreviewAnswers] = useState<boolean>(false);
+  const [state, setState] = useState<FormData>(() =>
+    initialState(props.formId)
+  );
 
-  const initialState: () => FormData = () => {
-    var JSONdata = localStorage.getItem("formsData");
-    const data = JSONdata ? JSON.parse(JSONdata) : defaultFormsData;
-    if (data.length > 0) {
-      const form = data.find((item: FormData) => {
-        return item.id === Number(props.formId);
-      });
-      return form;
-    }
-  };
-
-  const [state, setState] = useState<FormData>(initialState);
   const [question, setQuestion] = useState<Field>(
     state.formFields[currentQuestion]
   );
