@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Field, FormData } from "../types/formTypes";
 import { navigate } from "raviger";
 import { defaultFormsData } from "../constants";
@@ -19,29 +19,53 @@ const initialState: (formId: string) => FormData = (formId) => {
   }
 };
 
-// type ActionTypes = null
+interface Answer {
+  qid: number;
+  question: string;
+  answer: string;
+}
 
-// const reducer = (state, action) => {
-//   switch (action.type) {
-//     case "": {
-//     }
-//   }
-// };
+type ActionType = {
+  type: "UPDATE_VALUE";
+  payload: {
+    value: string;
+    id: string;
+  };
+};
 
-// const cqReducer = (state, action) => {
-//     switch (action.type) {
-//       case "": {
-//       }
-//     }
-//   };
+const reducer = (state: FormData, action: ActionType) => {
+  switch (action.type) {
+    case "UPDATE_VALUE": {
+      return {
+        ...state,
+        formFields: state.formFields.map((field: Field) => {
+          if (String(field.id) === action.payload.id) {
+            return { ...field, value: action.payload.value };
+          } else return field;
+        }),
+      };
+    }
+  }
+};
+
+const counterReducer = (state: number, action: { type: "INC" | "DEC" }) => {
+  switch (action.type) {
+    case "INC": {
+      return state + 1;
+    }
+    case "DEC": {
+      return state - 1;
+    }
+  }
+};
 
 function Preview(props: { formId: string }) {
-  const [currentQuestion, setCurrentQuestion] = useState<number>(0);
-  const [answers, setAnswers] = useState<string[]>([]);
-  const [previewAnswers, setPreviewAnswers] = useState<boolean>(false);
-  const [state, setState] = useState<FormData>(() =>
+  const [currentQuestion, counterDispatch] = useReducer(counterReducer, 0);
+  const [state, dispatch] = useReducer(reducer, null, () =>
     initialState(props.formId)
   );
+  const [previewAnswers, setPreviewAnswers] = useState<boolean>(false);
+  const [answers, setAnswers] = useState<Answer[]>([]);
   const [question, setQuestion] = useState<Field>(
     state.formFields[currentQuestion]
   );
@@ -51,23 +75,26 @@ function Preview(props: { formId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestion]);
 
-  const handleChangeInput = (e: { target: { id: string; value: any } }) => {
-    setState((p) => ({
-      ...p,
-      formFields: p.formFields.map((field) => {
-        if (String(field.id) === e.target.id) {
-          return { ...field, value: e.target.value };
-        } else return field;
-      }),
-    }));
+  const handleChange = (e: { target: { id: string; value: any } }) => {
+    dispatch({
+      type: "UPDATE_VALUE",
+      payload: { value: e.target.value, id: e.target.id },
+    });
   };
 
   const nextQuestion = () => {
     if (currentQuestion < state.formFields.length - 1)
-      setCurrentQuestion((p) => p + 1);
+      counterDispatch({ type: "INC" });
   };
+
   const save = () => {
-    setAnswers((p) => state.formFields.map((i) => i.value));
+    setAnswers((p) =>
+      state.formFields.map((i) => ({
+        qid: i.id,
+        question: i.name,
+        answer: i.value,
+      }))
+    );
   };
   const saveAnswer = () => {
     save();
@@ -77,6 +104,14 @@ function Preview(props: { formId: string }) {
   const submitForm = () => {
     save();
     setPreviewAnswers(true);
+  };
+
+  const handleKeyPress = (e: { key: string }) => {
+    if (e.key === "Enter") {
+      if (currentQuestion === state.formFields.length) {
+        submitForm();
+      } else saveAnswer();
+    }
   };
   return (
     <>
@@ -91,37 +126,34 @@ function Preview(props: { formId: string }) {
             </label>
             {question.kind === "text" ? (
               <TextInput
-                handleChangeInputCB={handleChangeInput}
                 field={question}
                 value={state.formFields[currentQuestion].value}
-                currentQuestion={currentQuestion}
-                totalQuestion={state.formFields.length - 1}
-                submitFormCB={submitForm}
-                saveAnswerCB={saveAnswer}
+                handleChangeCB={handleChange}
+                handleKeyPressCB={handleKeyPress}
               />
             ) : question.kind === "dropdown" ? (
               <DropdownInput
                 field={question}
-                handleChangeCB={handleChangeInput}
                 value={state.formFields[currentQuestion].value}
+                handleChangeCB={handleChange}
               />
             ) : question.kind === "radio" ? (
               <RadioInput
-                value={state.formFields[currentQuestion].value}
-                handleChangeCB={handleChangeInput}
                 field={question}
+                value={state.formFields[currentQuestion].value}
+                handleChangeCB={handleChange}
               />
             ) : question.kind === "textarea" ? (
               <TextAreaInput
                 field={question}
                 value={state.formFields[currentQuestion].value}
-                handleChangeCB={handleChangeInput}
+                handleChangeCB={handleChange}
               />
             ) : question.kind === "multi-select" ? (
               <MultiSelectInput
                 field={question}
-                handleChangeCB={handleChangeInput}
                 value={state.formFields[currentQuestion].value}
+                handleChangeCB={handleChange}
               />
             ) : null}
             <div className="flex mt-4 gap-2 justify-between items-center">
@@ -130,7 +162,7 @@ function Preview(props: { formId: string }) {
                 {currentQuestion > 0 && (
                   <button
                     onClick={() => {
-                      setCurrentQuestion((p) => p - 1);
+                      counterDispatch({ type: "DEC" });
                     }}
                     className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
                   >
@@ -157,10 +189,10 @@ function Preview(props: { formId: string }) {
         )
       ) : (
         <>
-          {answers.map((ans, index) => {
+          {answers.map((ans) => {
             return (
-              <div className="mt-2" key={index}>
-                <strong>{state.formFields[index].name}</strong> : {ans}
+              <div className="mt-2" key={ans.qid}>
+                <strong>{ans.question}</strong> : {ans.answer}
               </div>
             );
           })}

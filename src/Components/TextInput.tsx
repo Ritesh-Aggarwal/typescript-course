@@ -4,13 +4,11 @@ import { TextField } from "../types/formTypes";
 function TextInput(props: {
   field: TextField;
   value: string;
-  handleChangeInputCB: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  currentQuestion: number;
-  totalQuestion: number;
-  submitFormCB: () => void;
-  saveAnswerCB: () => void;
+  handleChangeCB: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleKeyPressCB: (e: { key: string }) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     inputRef.current?.focus();
   }, [props]);
@@ -25,14 +23,10 @@ function TextInput(props: {
         name={props.field.name}
         value={props.value}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          props.handleChangeInputCB(e);
+          props.handleChangeCB(e);
         }}
         onKeyPress={(e: { key: string }) => {
-          if (e.key === "Enter") {
-            if (props.currentQuestion === props.totalQuestion) {
-              props.submitFormCB();
-            } else props.saveAnswerCB();
-          }
+          props.handleKeyPressCB(e);
         }}
         placeholder={props.field.placeholder ? props.field.placeholder : ""}
       />
