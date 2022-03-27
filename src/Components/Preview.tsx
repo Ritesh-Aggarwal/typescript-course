@@ -38,12 +38,10 @@ const initialState: (formId: string) => FormData = (formId) => {
 function Preview(props: { formId: string }) {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [answers, setAnswers] = useState<string[]>([]);
-
   const [previewAnswers, setPreviewAnswers] = useState<boolean>(false);
   const [state, setState] = useState<FormData>(() =>
     initialState(props.formId)
   );
-
   const [question, setQuestion] = useState<Field>(
     state.formFields[currentQuestion]
   );
@@ -58,7 +56,6 @@ function Preview(props: { formId: string }) {
       ...p,
       formFields: p.formFields.map((field) => {
         if (String(field.id) === e.target.id) {
-          // console.log(e.target.value);
           return { ...field, value: e.target.value };
         } else return field;
       }),
@@ -104,13 +101,16 @@ function Preview(props: { formId: string }) {
               />
             ) : question.kind === "dropdown" ? (
               <DropdownInput
-                id={question.id}
+                field={question}
                 handleChangeCB={handleChangeInput}
-                options={question.options}
-                name={question.name}
+                value={state.formFields[currentQuestion].value}
               />
             ) : question.kind === "radio" ? (
-              <RadioInput handleChangeCB={handleChangeInput} field={question} />
+              <RadioInput
+                value={state.formFields[currentQuestion].value}
+                handleChangeCB={handleChangeInput}
+                field={question}
+              />
             ) : question.kind === "textarea" ? (
               <TextAreaInput
                 field={question}

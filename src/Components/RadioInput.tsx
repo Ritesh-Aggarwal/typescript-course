@@ -4,6 +4,7 @@ import { RadioField } from "../types/formTypes";
 function RadioInput(props: {
   field: RadioField;
   handleChangeCB: (e: { target: { id: string; value: any } }) => void;
+  value:string;
 }) {
   return (
     <div>
@@ -16,6 +17,7 @@ function RadioInput(props: {
               id={String(props.field.id)}
               name={props.field.name}
               value={option}
+              checked={props.value === option}
             />
             <label htmlFor={option}>{option}</label>
           </div>

@@ -1,25 +1,25 @@
 import React from "react";
+import { DropdownField } from "../types/formTypes";
 
 function DropdownInput(props: {
-  options: string[];
-  name: string;
-  id: number;
+  field: DropdownField;
   handleChangeCB: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  value: string;
 }) {
   return (
     <div>
       <select
-        id={String(props.id)}
-        name={props.name}
+        id={String(props.field.id)}
+        name={props.field.name}
         onChange={(e) => {
           props.handleChangeCB(e);
         }}
         className="w-full focus:ring-2 rounded-md p-2 hover:cursor-pointer border"
       >
         <option value="">Select an option</option>
-        {props.options.map((option, idx) => {
+        {props.field.options.map((option, idx) => {
           return (
-            <option key={idx} value={option}>
+            <option key={idx} value={option} selected={props.value === option}>
               {option}
             </option>
           );
