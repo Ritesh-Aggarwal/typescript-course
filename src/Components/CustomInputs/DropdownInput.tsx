@@ -1,5 +1,5 @@
 import React from "react";
-import { DropdownField } from "../types/formTypes";
+import { DropdownField } from "../../types/formTypes";
 
 function DropdownInput(props: {
   field: DropdownField;

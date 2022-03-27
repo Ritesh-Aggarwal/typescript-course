@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MultiSelectField } from "../types/formTypes";
+import { MultiSelectField } from "../../types/formTypes";
 
 export interface Option {
   value: string;

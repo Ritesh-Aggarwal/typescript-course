@@ -1,5 +1,5 @@
 import React from "react";
-import { TextAreaField } from "../types/formTypes";
+import { TextAreaField } from "../../types/formTypes";
 
 function TextAreaInput(props: {
   field: TextAreaField;

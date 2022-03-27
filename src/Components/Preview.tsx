@@ -2,11 +2,11 @@ import React, { useEffect, useReducer, useState } from "react";
 import { Field, FormData } from "../types/formTypes";
 import { navigate } from "raviger";
 import { defaultFormsData } from "../constants";
-import TextInput from "./TextInput";
-import DropdownInput from "./DropdownInput";
-import RadioInput from "./RadioInput";
-import TextAreaInput from "./TextAreaInput";
-import MultiSelectInput from "./MultiSelectInput";
+import TextInput from "./CustomInputs/TextInput";
+import DropdownInput from "./CustomInputs/DropdownInput";
+import RadioInput from "./CustomInputs/RadioInput";
+import TextAreaInput from "./CustomInputs/TextAreaInput";
+import MultiSelectInput from "./CustomInputs/MultiSelectInput";
 
 const initialState: (formId: string) => FormData = (formId) => {
   var JSONdata = localStorage.getItem("formsData");

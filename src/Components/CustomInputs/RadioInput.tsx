@@ -1,10 +1,10 @@
 import React from "react";
-import { RadioField } from "../types/formTypes";
+import { RadioField } from "../../types/formTypes";
 
 function RadioInput(props: {
   field: RadioField;
   handleChangeCB: (e: { target: { id: string; value: any } }) => void;
-  value:string;
+  value: string;
 }) {
   return (
     <div>

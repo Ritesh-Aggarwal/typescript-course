@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { TextField } from "../types/formTypes";
+import { TextField } from "../../types/formTypes";
 
 function TextInput(props: {
   field: TextField;
