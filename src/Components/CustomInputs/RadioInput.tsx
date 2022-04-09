@@ -3,7 +3,7 @@ import { RadioField } from "../../types/formTypes";
 
 function RadioInput(props: {
   field: RadioField;
-  handleChangeCB: (e: { target: { id: string; value: any } }) => void;
+  handleChangeCB: (e: { target: { id: string; value: string } }) => void;
   value: string;
 }) {
   return (

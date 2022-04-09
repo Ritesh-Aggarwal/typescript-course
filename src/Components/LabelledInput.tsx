@@ -5,7 +5,7 @@ interface Props {
   field: Field;
   removeFieldCB: (id: number) => void;
   value: string;
-  handleChangeCB: (e: { target: { id: string; value: any } }) => void;
+  handleChangeCB: (e: { target: { id: string; value: string } }) => void;
   handleOptionChangeCB: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

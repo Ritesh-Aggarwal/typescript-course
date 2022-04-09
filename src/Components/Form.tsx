@@ -156,7 +156,7 @@ function Form(props: { formId: string }) {
     setNewField(e.target.value);
   };
 
-  const handleChangeInput = (e: { target: { id: string; value: any } }) => {
+  const handleChangeInput = (e: { target: { id: string; value: string } }) => {
     dispatch({
       type: "UPDATE_NAME",
       payload: { id: e.target.id, value: e.target.value },

@@ -4,7 +4,7 @@ import { TextAreaField } from "../../types/formTypes";
 function TextAreaInput(props: {
   field: TextAreaField;
   value: string;
-  handleChangeCB: (e: { target: { id: string; value: any } }) => void;
+  handleChangeCB: (e: { target: { id: string; value: string } }) => void;
 }) {
   return (
     <>

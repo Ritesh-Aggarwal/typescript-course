@@ -75,7 +75,7 @@ function Preview(props: { formId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestion]);
 
-  const handleChange = (e: { target: { id: string; value: any } }) => {
+  const handleChange = (e: { target: { id: string; value: string } }) => {
     dispatch({
       type: "UPDATE_VALUE",
       payload: { value: e.target.value, id: e.target.id },

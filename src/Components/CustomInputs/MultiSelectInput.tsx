@@ -9,7 +9,7 @@ export interface Option {
 function MultiSelectInput(props: {
   field: MultiSelectField;
   value: string;
-  handleChangeCB: (e: { target: { id: string; value: any } }) => void;
+  handleChangeCB: (e: { target: { id: string; value: string } }) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(() => {
