@@ -1,12 +1,14 @@
 import { ActiveLink } from "raviger";
-import React from "react";
+import React, { useEffect } from "react";
 import logo from "../logo.svg";
+import { User } from "../types/userTypes";
 
 interface Props {
-  // title: string;
+  currentUser: User;
 }
 
 function Header(props: Props) {
+  useEffect(() => {}, [props.currentUser]);
   return (
     <div className="flex border-b p-2">
       <img
@@ -17,20 +19,40 @@ function Header(props: Props) {
         }}
         alt="logo"
       />
-      <div className="flex gap-4 ">
+      <div className="flex gap-4 items-center">
         {[
-          { url: "/", name: "Home" },
-          { url: "/about", name: "About" },
+          { url: "/", page: "Home" },
+          { url: "/about", page: "About" },
+          ...(props.currentUser?.username !== ""
+            ? [
+                {
+                  page: "Logout",
+                  url: "/logout",
+                  onClick: () => {
+                    localStorage.removeItem("token");
+                    window.location.reload();
+                  },
+                },
+              ]
+            : [{ url: "/login", page: "Login" }]),
         ].map((i) => {
-          return (
-            <ActiveLink
-              key={i.url}
-              href={i.url}
-              exactActiveClass="text-blue-400 border-b-2 border-blue-500"
-            >
-              {i.name}
-            </ActiveLink>
-          );
+          if (i.page === "Logout") {
+            return (
+              <button className="p-0" key={i.url} onClick={i.onClick}>
+                {i.page}
+              </button>
+            );
+          } else {
+            return (
+              <ActiveLink
+                key={i.url}
+                href={i.url}
+                exactActiveClass="text-blue-400 border-b-2 border-blue-500"
+              >
+                {i.page}
+              </ActiveLink>
+            );
+          }
         })}
       </div>
     </div>

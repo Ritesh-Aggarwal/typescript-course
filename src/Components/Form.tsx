@@ -72,17 +72,19 @@ const reducer = (state: FormData, action: FormDataAction) => {
       if (["radio", "multi-select", "dropdown"].includes(action.payload.kind)) {
         obj = { ...obj, options: [] } as Field;
       }
-      return {
-        ...state,
-        formFields: [...state.formFields, obj],
-      };
+      return state.formFields
+        ? {
+            ...state,
+            formFields: [...state.formFields, obj],
+          }
+        : state;
     }
     case "REMOVE_FIELD": {
       return {
         ...state,
-        formFields: state.formFields.filter(
-          (item) => item.id !== action.payload.id
-        ),
+        formFields:
+          state.formFields &&
+          state.formFields.filter((item) => item.id !== action.payload.id),
       };
     }
     case "UPDATE_TITLE": {
@@ -94,24 +96,28 @@ const reducer = (state: FormData, action: FormDataAction) => {
     case "UPDATE_FIELD_OPTIONS": {
       return {
         ...state,
-        formFields: state.formFields.map((field: Field) => {
-          if (String(field.id) === action.payload.id) {
-            return {
-              ...field,
-              options: action.payload.value.split(","),
-            };
-          } else return field;
-        }),
+        formFields:
+          state.formFields &&
+          state.formFields.map((field: Field) => {
+            if (String(field.id) === action.payload.id) {
+              return {
+                ...field,
+                options: action.payload.value.split(","),
+              };
+            } else return field;
+          }),
       };
     }
     case "UPDATE_NAME": {
       return {
         ...state,
-        formFields: state.formFields.map((field: Field) => {
-          if (String(field.id) === action.payload.id) {
-            return { ...field, name: action.payload.value };
-          } else return field;
-        }),
+        formFields:
+          state.formFields &&
+          state.formFields.map((field: Field) => {
+            if (String(field.id) === action.payload.id) {
+              return { ...field, name: action.payload.value };
+            } else return field;
+          }),
       };
     }
   }
@@ -196,27 +202,28 @@ function Form(props: { formId: string }) {
           className="outline text-black  outline-slate-200 focus:ring-2 rounded-md px-2 flex-1 text-lg my-2"
           type="text"
         />
-        {state.formFields.map((field: Field, idx: number) => {
-          return (
-            <div key={idx} className="my-4">
-              <div className="font-semibold">Question {idx + 1}</div>
-              <div className="border-y">
-                <LabelledInput
-                  handleChangeCB={handleChangeInput}
-                  value={field.name}
-                  removeFieldCB={removeField}
-                  field={field}
-                  handleOptionChangeCB={(e) => {
-                    dispatch({
-                      type: "UPDATE_FIELD_OPTIONS",
-                      payload: { id: e.target.id, value: e.target.value },
-                    });
-                  }}
-                />
+        {state.formFields &&
+          state.formFields.map((field: Field, idx: number) => {
+            return (
+              <div key={idx} className="my-4">
+                <div className="font-semibold">Question {idx + 1}</div>
+                <div className="border-y">
+                  <LabelledInput
+                    handleChangeCB={handleChangeInput}
+                    value={field.name}
+                    removeFieldCB={removeField}
+                    field={field}
+                    handleOptionChangeCB={(e) => {
+                      dispatch({
+                        type: "UPDATE_FIELD_OPTIONS",
+                        payload: { id: e.target.id, value: e.target.value },
+                      });
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
         <div className="border-y p-2 mt-2">
           <div className="flex gap-2">
             <input
