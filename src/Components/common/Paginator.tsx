@@ -53,23 +53,23 @@ export default function Paginator(props: {
                 <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
               </a>
             )}
-            {Array.from(Array(Math.ceil(props.total / props.limit)).keys()).map(
-              (i) => {
-                return (
-                  <a
-                    key={i}
-                    href={`?page=${i + 1}`}
-                    className={` ${
-                      i + 1 === props.page
-                        ? "z-10 bg-indigo-50 border-indigo-500 text-indigo-600 "
-                        : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50 "
-                    } relative inline-flex items-center px-4 py-2 border text-sm font-medium`}
-                  >
-                    {i + 1}
-                  </a>
-                );
-              }
-            )}
+            {Array.from(
+              Array(Math.min(5, Math.ceil(props.total / props.limit))).keys()
+            ).map((i) => {
+              return (
+                <a
+                  key={i}
+                  href={`?page=${i + 1}`}
+                  className={` ${
+                    i + 1 === props.page
+                      ? "z-10 bg-indigo-50 border-indigo-500 text-indigo-600 "
+                      : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50 "
+                  } relative inline-flex items-center px-4 py-2 border text-sm font-medium`}
+                >
+                  {i + 1}
+                </a>
+              );
+            })}
 
             {props.page < Math.ceil(props.total / props.limit) && (
               <a

@@ -7,6 +7,8 @@ import CreateForm from "./CreateForm";
 import { deleteForm, listForms } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 import Paginator from "./common/Paginator";
+import { getCurrentUser } from "../App";
+import { User } from "../types/userTypes";
 
 const limit: number = 2;
 const fetchForms = async (
@@ -43,6 +45,13 @@ const deleteFormById = async (id: number) => {
 };
 
 function FormsList() {
+  const [currentUser, setCurrentUser] = useState<User>({
+    username: "",
+    password: null,
+  });
+  useEffect(() => {
+    getCurrentUser(setCurrentUser);
+  }, []);
   const [{ search, page }] = useQueryParams();
   const [count, setCount] = useState<number>(0);
   const [open, setOpen] = useState<boolean>(false);
@@ -82,14 +91,16 @@ function FormsList() {
             />
           </form>
         </div>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          + New Form
-        </button>
+        {currentUser.username !== "" && (
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            + New Form
+          </button>
+        )}
       </div>
       {list &&
         list
@@ -119,12 +130,14 @@ function FormsList() {
                   >
                     Take quiz
                   </Link>
-                  <Link
-                    href={`/form/${form.id}`}
-                    className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-                  >
-                    Edit
-                  </Link>
+                  {currentUser.username !== "" && (
+                    <Link
+                      href={`/form/${form.id}`}
+                      className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+                    >
+                      Edit
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       handleDelete(form.id);

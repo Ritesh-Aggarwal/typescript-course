@@ -3,7 +3,7 @@ import AppRouter from "./AppRouter";
 import { User } from "./types/userTypes";
 import { me } from "./utils/apiUtils";
 
-const getCurrentUser = async (setCurrentUser: (value: User) => void) => {
+export const getCurrentUser = async (setCurrentUser: (value: User) => void) => {
   const user = await me();
   setCurrentUser(user);
 };
