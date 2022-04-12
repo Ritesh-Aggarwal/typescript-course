@@ -1,8 +1,8 @@
 import React from "react";
-import { DropdownField } from "../../types/formTypes";
+import { Dropdown } from "../../types/formTypes";
 
 function DropdownInput(props: {
-  field: DropdownField;
+  field: Dropdown;
   handleChangeCB: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   value: string;
 }) {
@@ -10,7 +10,7 @@ function DropdownInput(props: {
     <div>
       <select
         id={String(props.field.id)}
-        name={props.field.name}
+        name={props.field.label}
         onChange={(e) => {
           props.handleChangeCB(e);
         }}
@@ -19,7 +19,12 @@ function DropdownInput(props: {
         <option value="">Select an option</option>
         {props.field.options.map((option, idx) => {
           return (
-            <option key={idx} value={option} selected={props.value === option}>
+            <option
+              key={idx}
+              value={option}
+              defaultValue={props.value}
+              // selected={props.value === option}
+            >
               {option}
             </option>
           );

@@ -55,6 +55,35 @@ export interface FormData {
   formFields: Field[];
 }
 
+export type Dropdown = {
+  id: number;
+  label: string;
+  kind: "DROPDOWN";
+  options: string[];
+  value: string;
+};
+export type Radio = {
+  id: number;
+  label: string;
+  kind: "RADIO";
+  options: string[];
+  value: string;
+};
+export type Generic = {
+  id: number;
+  label: string;
+  kind: "GENERIC";
+  options?: string[];
+  value: string;
+};
+export type Text = {
+  id: number;
+  label: string;
+  kind: "TEXT";
+  options?: string[];
+  value: string;
+};
+export type FormField = Dropdown | Radio | Text | Generic;
 export type FormItem = Omit<FormData, "formFields">;
 
 export type Form = {

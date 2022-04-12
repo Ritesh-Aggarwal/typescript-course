@@ -1,9 +1,11 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
-import { defaultFormsData } from "../constants";
-import LabelledInput from "./LabelledInput";
+import { defaultFormsData } from "../../constants";
+import LabelledInput from "../LabelledInput";
 import { Link } from "raviger";
-import { Field, FormData } from "../types/formTypes";
-import NotFound from "./NotFound";
+import { Field, FormData } from "../../types/formTypes";
+import NotFound from "../NotFound";
+import { getFormFields } from "../../utils/apiUtils";
+import { reducer } from "./formReducers";
 
 const initialState: (id: number) => FormData = (id) => {
   var JSONdata = localStorage.getItem("formsData");
@@ -15,120 +17,13 @@ const initialState: (id: number) => FormData = (id) => {
   return form;
 };
 
-type AddFieldAction = {
-  type: "ADD_FIELD";
-  payload: {
-    kind: string;
-    name: string;
-  };
-};
-
-type RemoveFieldAction = {
-  type: "REMOVE_FIELD";
-  payload: {
-    id: number;
-  };
-};
-
-type UpdateTitleAction = {
-  type: "UPDATE_TITLE";
-  payload: {
-    value: string;
-  };
-};
-
-type UpdateOptionAction = {
-  type: "UPDATE_FIELD_OPTIONS";
-  payload: {
-    value: string;
-    id: string;
-  };
-};
-
-type UpdateNameAction = {
-  type: "UPDATE_NAME";
-  payload: {
-    value: string;
-    id: string;
-  };
-};
-
-type FormDataAction =
-  | AddFieldAction
-  | RemoveFieldAction
-  | UpdateTitleAction
-  | UpdateOptionAction
-  | UpdateNameAction;
-
-const reducer = (state: FormData, action: FormDataAction) => {
-  switch (action.type) {
-    case "ADD_FIELD": {
-      var obj: Field = {
-        id: Number(new Date()),
-        name: action.payload.name,
-        kind: action.payload.kind,
-        value: "",
-      } as Field;
-      if (["radio", "multi-select", "dropdown"].includes(action.payload.kind)) {
-        obj = { ...obj, options: [] } as Field;
-      }
-      return state.formFields
-        ? {
-            ...state,
-            formFields: [...state.formFields, obj],
-          }
-        : state;
-    }
-    case "REMOVE_FIELD": {
-      return {
-        ...state,
-        formFields:
-          state.formFields &&
-          state.formFields.filter((item) => item.id !== action.payload.id),
-      };
-    }
-    case "UPDATE_TITLE": {
-      return {
-        ...state,
-        title: action.payload.value,
-      };
-    }
-    case "UPDATE_FIELD_OPTIONS": {
-      return {
-        ...state,
-        formFields:
-          state.formFields &&
-          state.formFields.map((field: Field) => {
-            if (String(field.id) === action.payload.id) {
-              return {
-                ...field,
-                options: action.payload.value.split(","),
-              };
-            } else return field;
-          }),
-      };
-    }
-    case "UPDATE_NAME": {
-      return {
-        ...state,
-        formFields:
-          state.formFields &&
-          state.formFields.map((field: Field) => {
-            if (String(field.id) === action.payload.id) {
-              return { ...field, name: action.payload.value };
-            } else return field;
-          }),
-      };
-    }
-  }
-};
-
 function Form(props: { formId: string }) {
   const [newField, setNewField] = useState<string>("");
   const [newFieldType, setNewFieldType] = useState<string>("text");
   const [state, dispatch] = useReducer(reducer, null, () =>
     initialState(Number(props.formId))
   );
+
   const titleRef = useRef<HTMLInputElement>(null);
 
   const saveForm = (data: FormData) => {

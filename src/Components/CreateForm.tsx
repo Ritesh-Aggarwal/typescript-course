@@ -18,7 +18,7 @@ function CreateForm() {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const data = await createForm(form);
-        navigate(`/forms/${data.id}`);
+        navigate(`/form/${data.id}`);
       } catch (err) {
         console.log(err);
       }

@@ -3,6 +3,7 @@ import { Form } from "../types/formTypes";
 const API_BASE_URL = "https://tsapi.coronasafe.live/api/";
 
 type ReqMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+type Field = { label: string; kind: string; options?: string[]; value: string };
 
 export const request = async (
   endpoint: string,
@@ -52,6 +53,40 @@ export const createForm = (form: Form) => {
 
 export const listForms = (params: { limit?: number; offset?: number } = {}) => {
   return request("forms/", "GET", params);
+};
+
+export const getForm = (id: string) => {
+  return request("forms/" + id + "/", "GET");
+};
+export const getFormFields = (id: string) => {
+  return request("forms/" + id + "/fields/", "GET");
+};
+
+export const addFormFields = (id: string, field: Field) => {
+  return request("forms/" + id + "/fields/", "POST", field);
+};
+
+export const removeFormField = (formId: string, id: string) => {
+  return request("forms/" + formId + "/fields/" + id + "/", "DELETE");
+};
+export const deleteForm = (formId: string) => {
+  return request("forms/" + formId + "/", "DELETE");
+};
+
+export const saveFormField = (formId: string, id: string, field: Field) => {
+  return request("forms/" + formId + "/fields/" + id + "/", "PATCH", field);
+};
+
+export const submitAnswers = (
+  formId: string,
+  answers: { form_field: number; value: string }[]
+) => {
+  return request("forms/" + formId + "/submission/", "POST", {
+    answers: answers,
+  });
+};
+export const getSubmissions = (formId: string) => {
+  return request("forms/" + formId + "/submission/", "GET");
 };
 
 export const login = (username: string, password: string) => {

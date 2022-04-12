@@ -1,21 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { FormData, FormItem } from "../types/formTypes";
+import { FormItem } from "../types/formTypes";
 // import { defaultFormsData, formData } from "../constants";
 import { Link, useQueryParams } from "raviger";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
-import { listForms } from "../utils/apiUtils";
+import { deleteForm, listForms } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 import Paginator from "./common/Paginator";
 
-// const initialState: () => FormData[] = () => {
-//   const data = localStorage.getItem("formsData");
-//   const result = data ? JSON.parse(data) : defaultFormsData;
-//   localStorage.setItem("formsData", JSON.stringify(result));
-//   return result;
-// };
-
-const limit: number = 1;
+const limit: number = 2;
 const fetchForms = async (
   setListCB: (value: FormItem[]) => void,
   page: number
@@ -40,6 +33,15 @@ const fetchFormsCount = async (setCountCB: (value: number) => void) => {
   }
 };
 
+const deleteFormById = async (id: number) => {
+  try {
+    const data = await deleteForm(String(id));
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 function FormsList() {
   const [{ search, page }] = useQueryParams();
   const [count, setCount] = useState<number>(0);
@@ -54,24 +56,13 @@ function FormsList() {
     fetchFormsCount(setCount);
   }, []);
 
-  // const newForm = () => {
-  //   const newForm = { ...formData, id: Number(new Date()) };
-  //   const d: string | null = localStorage.getItem("formsData");
-  //   var data: FormData[] = d ? JSON.parse(d) : [];
-  //   data = [...data, newForm];
-  //   setList(data);
-  //   localStorage.setItem("formsData", JSON.stringify(data));
-  //   navigate(`/form/${newForm.id}`);
-  // };
-
-  const deleteForm = (id: number) => {
-    const JSONdata = localStorage.getItem("formsData");
-    let data: FormData[] = JSONdata ? JSON.parse(JSONdata) : [];
-    data = data.filter((form: FormData) => {
-      return form.id !== id;
+  const handleDelete = (id: number) => {
+    deleteFormById(id);
+    setList((p) => {
+      if (p) {
+        return [...p?.filter((item) => item.id !== id)];
+      }
     });
-    localStorage.setItem("formsData", JSON.stringify(data));
-    setList(data);
   };
 
   return (
@@ -93,7 +84,6 @@ function FormsList() {
         </div>
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
-          // onClick={newForm}
           onClick={() => {
             setOpen(true);
           }}
@@ -118,6 +108,12 @@ function FormsList() {
                 </div>
                 <div className="flex gap-2">
                   <Link
+                    href={`/form/${form.id}/submissions`}
+                    className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+                  >
+                    View Submissions
+                  </Link>
+                  <Link
                     href={`/preview/${form.id}`}
                     className="bg-blue-500 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
                   >
@@ -131,7 +127,7 @@ function FormsList() {
                   </Link>
                   <button
                     onClick={() => {
-                      deleteForm(form.id);
+                      handleDelete(form.id);
                     }}
                     className="bg-red-500 hover:bg-red-700 text-white rounded-lg px-4 py-2"
                   >

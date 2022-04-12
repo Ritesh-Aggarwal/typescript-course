@@ -1,8 +1,8 @@
 import React from "react";
-import { RadioField } from "../../types/formTypes";
+import { Radio } from "../../types/formTypes";
 
 function RadioInput(props: {
-  field: RadioField;
+  field: Radio;
   handleChangeCB: (e: { target: { id: string; value: string } }) => void;
   value: string;
 }) {
@@ -15,7 +15,7 @@ function RadioInput(props: {
               onChange={props.handleChangeCB}
               type="radio"
               id={String(props.field.id)}
-              name={props.field.name}
+              name={props.field.label}
               value={option}
               checked={props.value === option}
             />

@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { Field, FormData } from "../types/formTypes";
+import { Field, FormData } from "../../types/formTypes";
 import { navigate } from "raviger";
-import { defaultFormsData } from "../constants";
-import TextInput from "./CustomInputs/TextInput";
-import DropdownInput from "./CustomInputs/DropdownInput";
-import RadioInput from "./CustomInputs/RadioInput";
-import TextAreaInput from "./CustomInputs/TextAreaInput";
-import MultiSelectInput from "./CustomInputs/MultiSelectInput";
+import { defaultFormsData } from "../../constants";
+// import TextInput from "../CustomInputs/TextInput";
+// import DropdownInput from "../CustomInputs/DropdownInput";
+// import RadioInput from "../CustomInputs/RadioInput";
+import TextAreaInput from "../CustomInputs/TextAreaInput";
+import MultiSelectInput from "../CustomInputs/MultiSelectInput";
 
 const initialState: (formId: string) => FormData = (formId) => {
   var JSONdata = localStorage.getItem("formsData");
@@ -48,7 +48,10 @@ const reducer = (state: FormData, action: ActionType) => {
   }
 };
 
-const counterReducer = (state: number, action: { type: "INC" | "DEC" }) => {
+export const counterReducer = (
+  state: number,
+  action: { type: "INC" | "DEC" }
+) => {
   switch (action.type) {
     case "INC": {
       return state + 1;
@@ -106,13 +109,13 @@ function Preview(props: { formId: string }) {
     setPreviewAnswers(true);
   };
 
-  const handleKeyPress = (e: { key: string }) => {
-    if (e.key === "Enter") {
-      if (currentQuestion === state.formFields.length) {
-        submitForm();
-      } else saveAnswer();
-    }
-  };
+  // const handleKeyPress = (e: { key: string }) => {
+  //   if (e.key === "Enter") {
+  //     if (currentQuestion === state.formFields.length) {
+  //       submitForm();
+  //     } else saveAnswer();
+  //   }
+  // };
   return (
     <>
       {!previewAnswers ? (
@@ -125,24 +128,30 @@ function Preview(props: { formId: string }) {
               {state.formFields[currentQuestion].name}
             </label>
             {question.kind === "text" ? (
-              <TextInput
+              <>
+                {/* <TextInput
                 field={question}
                 value={state.formFields[currentQuestion].value}
                 handleChangeCB={handleChange}
-                handleKeyPressCB={handleKeyPress}
-              />
+                // handleKeyPressCB={handleKeyPress}
+                /> */}
+              </>
             ) : question.kind === "dropdown" ? (
-              <DropdownInput
+              <>
+                {/* <DropdownInput
                 field={question}
                 value={state.formFields[currentQuestion].value}
                 handleChangeCB={handleChange}
-              />
+                /> */}
+              </>
             ) : question.kind === "radio" ? (
-              <RadioInput
+              <>
+                {/* <RadioInput
                 field={question}
                 value={state.formFields[currentQuestion].value}
                 handleChangeCB={handleChange}
-              />
+                /> */}
+              </>
             ) : question.kind === "textarea" ? (
               <TextAreaInput
                 field={question}
