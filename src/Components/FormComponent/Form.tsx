@@ -103,7 +103,7 @@ function Form(props: { formId: string }) {
               <div key={idx} className="my-4">
                 <div className="font-semibold">Question {idx + 1}</div>
                 <div className="border-y">
-                  <LabelledInput
+                  {/* <LabelledInput
                     handleChangeCB={handleChangeInput}
                     value={field.name}
                     removeFieldCB={removeField}
@@ -114,7 +114,7 @@ function Form(props: { formId: string }) {
                         payload: { id: e.target.id, value: e.target.value },
                       });
                     }}
-                  />
+                  /> */}
                 </div>
               </div>
             );

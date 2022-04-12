@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FormItem } from "../types/formTypes";
 // import { defaultFormsData, formData } from "../constants";
-import { Link, useQueryParams } from "raviger";
+import { useQueryParams } from "raviger";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
 import { deleteForm, listForms } from "../utils/apiUtils";
@@ -9,7 +9,6 @@ import { Pagination } from "../types/common";
 import Paginator from "./common/Paginator";
 import { getCurrentUser } from "../App";
 import { User } from "../types/userTypes";
-import Copy from "../Copy";
 import { ListForm } from "./ListForm";
 
 const limit: number = 2;
@@ -58,7 +57,7 @@ function FormsList() {
   const [count, setCount] = useState<number>(0);
   const [open, setOpen] = useState<boolean>(false);
   const [searchString, setSearchString] = useState("");
-  const [list, setList] = useState<FormItem[]>();
+  const [list, setList] = useState<FormItem[]>([]);
   useEffect(() => {
     fetchForms(setList, page);
   }, [page]);
@@ -71,8 +70,9 @@ function FormsList() {
     deleteFormById(id);
     setList((p) => {
       if (p) {
-        return [...p?.filter((item) => item.id !== id)];
+        return [...p.filter((item) => item.id !== id)];
       }
+      return p;
     });
   };
 
@@ -104,22 +104,21 @@ function FormsList() {
           </button>
         )}
       </div>
-      {list &&
-        list
-          .filter((form) =>
-            form.title.toLowerCase().includes(search?.toLowerCase() || "")
-          )
-          .map((form) => {
-            return (
-              <div key={form.id}>
-                <ListForm
-                  form={form}
-                  handleDeleteCB={handleDelete}
-                  currentUser={currentUser}
-                />
-              </div>
-            );
-          })}
+      {list
+        .filter((form) =>
+          form.title.toLowerCase().includes(search?.toLowerCase() || "")
+        )
+        .map((form) => {
+          return (
+            <div key={form.id}>
+              <ListForm
+                form={form}
+                handleDeleteCB={handleDelete}
+                currentUser={currentUser}
+              />
+            </div>
+          );
+        })}
       <Modal
         open={open}
         closeCB={() => {
