@@ -9,6 +9,7 @@ import { Pagination } from "../types/common";
 import Paginator from "./common/Paginator";
 import { getCurrentUser } from "../App";
 import { User } from "../types/userTypes";
+import Copy from "../Copy";
 
 const limit: number = 2;
 const fetchForms = async (
@@ -146,6 +147,7 @@ function FormsList() {
                   >
                     Delete
                   </button>
+                  <Copy formId={form.id} />
                 </div>
               </div>
             );
