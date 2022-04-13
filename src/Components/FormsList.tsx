@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FormItem } from "../types/formTypes";
-// import { defaultFormsData, formData } from "../constants";
 import { useQueryParams } from "raviger";
-// import Modal from "./common/Modal";
-// import CreateForm from "./CreateForm";
 import { deleteForm, listForms } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 import Paginator from "./common/Paginator";
@@ -128,9 +125,7 @@ function FormsList() {
             setOpen(false);
           }}
         >
-          <React.Suspense fallback={<div>Loading...</div>}>
-            <LazyForm />
-          </React.Suspense>
+          <LazyForm />
         </LazyModal>
       </React.Suspense>
       <Paginator page={Number(page ? page : 1)} total={count} limit={limit} />
