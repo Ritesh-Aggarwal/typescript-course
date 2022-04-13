@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { FormItem } from "../types/formTypes";
 // import { defaultFormsData, formData } from "../constants";
 import { useQueryParams } from "raviger";
-import Modal from "./common/Modal";
-import CreateForm from "./CreateForm";
+// import Modal from "./common/Modal";
+// import CreateForm from "./CreateForm";
 import { deleteForm, listForms } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 import Paginator from "./common/Paginator";
@@ -11,6 +11,8 @@ import { getCurrentUser } from "../App";
 import { User } from "../types/userTypes";
 import { ListForm } from "./ListForm";
 
+const LazyModal = React.lazy(() => import("./common/Modal"));
+const LazyForm = React.lazy(() => import("./CreateForm"));
 const limit: number = 2;
 const fetchForms = async (
   setListCB: (value: FormItem[]) => void,
@@ -119,14 +121,18 @@ function FormsList() {
             </div>
           );
         })}
-      <Modal
-        open={open}
-        closeCB={() => {
-          setOpen(false);
-        }}
-      >
-        <CreateForm />
-      </Modal>
+      <React.Suspense fallback={<div>Loading...</div>}>
+        <LazyModal
+          open={open}
+          closeCB={() => {
+            setOpen(false);
+          }}
+        >
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <LazyForm />
+          </React.Suspense>
+        </LazyModal>
+      </React.Suspense>
       <Paginator page={Number(page ? page : 1)} total={count} limit={limit} />
     </div>
   );
