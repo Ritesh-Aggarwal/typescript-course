@@ -13,7 +13,7 @@ type Props = {
 export const ListForm = ({ form, handleDeleteCB, currentUser }: Props) => {
   return (
     <div className="p-4 border-t-2 flex justify-between items-center">
-      <div className="font-semibold text-lg">{form.title}</div>
+      <li className="font-semibold text-lg">{form.title}</li>
       <div className="text-gray-500"></div>
       <div className="flex gap-2">
         <Link

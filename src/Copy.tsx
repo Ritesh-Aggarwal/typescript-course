@@ -14,10 +14,10 @@ export default function Copy(props: { formId: number }) {
   return (
     <div className="flex">
       <CopyToClipboard
-        text={`localhost:3000/form/${props.formId}`}
+        text={`localhost:3000/preview/${props.formId}`}
         onCopy={onCopy}
       >
-        <button>
+        <button aria-label="Copy">
           {!copied ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"

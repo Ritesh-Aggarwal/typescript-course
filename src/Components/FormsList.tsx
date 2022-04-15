@@ -103,21 +103,23 @@ function FormsList() {
           </button>
         )}
       </div>
-      {list
-        .filter((form) =>
-          form.title.toLowerCase().includes(search?.toLowerCase() || "")
-        )
-        .map((form) => {
-          return (
-            <div key={form.id}>
-              <ListForm
-                form={form}
-                handleDeleteCB={handleDelete}
-                currentUser={currentUser}
-              />
-            </div>
-          );
-        })}
+      <ul>
+        {list
+          .filter((form) =>
+            form.title.toLowerCase().includes(search?.toLowerCase() || "")
+          )
+          .map((form) => {
+            return (
+              <div tabIndex={0} key={form.id}>
+                <ListForm
+                  form={form}
+                  handleDeleteCB={handleDelete}
+                  currentUser={currentUser}
+                />
+              </div>
+            );
+          })}
+      </ul>
       <React.Suspense fallback={<div>Loading...</div>}>
         <LazyModal
           open={open}
