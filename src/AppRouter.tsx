@@ -4,8 +4,6 @@ import AppContainer from "./Components/AppContainer";
 import Header from "./Components/Header";
 import About from "./Components/About";
 import { User } from "./types/userTypes";
-import PreviewForm from "./Components/PreviewForm/PreviewForm";
-import Submission from "./Components/Submission";
 import NotFound from "./Components/NotFound";
 import LoadingList from "./Components/LoadingList";
 
@@ -14,32 +12,27 @@ const LoginPage = React.lazy(() => import("./Components/Login"));
 const EditPage = React.lazy(
   () => import("./Components/FormComponent/EditForm")
 );
-
+const SubmissionPage = React.lazy(() => import("./Components/Submission"));
+const PreviewFormPage = React.lazy(
+  () => import("./Components/PreviewForm/PreviewForm")
+);
 const publicRoutes = {
   "/": () => (
     <React.Suspense fallback={<LoadingList />}>
       <Home />
     </React.Suspense>
   ),
-  "/login": () => (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <LoginPage />
-    </React.Suspense>
-  ),
+  "/login": () => <LoginPage />,
   "/about": () => <About />,
   "/form/:id/submissions": ({ id }: { id: string }) => (
-    <Submission formId={id} />
+    <SubmissionPage formId={id} />
   ),
   "/preview/:formId": ({ formId }: { formId: string }) => (
-    <PreviewForm formId={formId} />
+    <PreviewFormPage formId={formId} />
   ),
 };
 const privateRoutes = {
-  "/form/:id": ({ id }: { id: string }) => (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <EditPage formId={id} />
-    </React.Suspense>
-  ),
+  "/form/:id": ({ id }: { id: string }) => <EditPage formId={id} />,
 };
 
 function AppRouter(props: { currentUser: User }) {
@@ -51,7 +44,9 @@ function AppRouter(props: { currentUser: User }) {
   return (
     <AppContainer>
       <Header currentUser={props.currentUser} />
-      {routeResults || <NotFound />}
+      <React.Suspense fallback={<div>Loading...</div>}>
+        {routeResults || <NotFound />}
+      </React.Suspense>
     </AppContainer>
   );
 }
